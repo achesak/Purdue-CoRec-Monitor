@@ -131,9 +131,9 @@ public class CoRecAdapter extends RecyclerView.Adapter<CoRecAdapter.AreaViewHold
         holder.headCountDisplay.setProgress(currentCount);
 
         int capacityColorId = R.color.headCountLow;
-        if (percentageFilled >= 0.75) {
+        if (percentageFilled >= 0.80) {
             capacityColorId = R.color.headCountHigh;
-        } else if (percentageFilled >= 0.50) {
+        } else if (percentageFilled >= 0.60) {
             capacityColorId = R.color.headCountMedium;
         }
         holder.headCountDisplay.getProgressDrawable().setColorFilter(
