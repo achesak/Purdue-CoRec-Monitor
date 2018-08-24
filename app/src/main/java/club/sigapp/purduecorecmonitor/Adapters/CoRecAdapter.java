@@ -2,6 +2,8 @@ package club.sigapp.purduecorecmonitor.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -109,9 +112,31 @@ public class CoRecAdapter extends RecyclerView.Adapter<CoRecAdapter.AreaViewHold
 
     @Override
     public void onBindViewHolder(AreaViewHolder holder, int position) {
+        int currentCount = filteredLocations.get(position).Count;
+        int capacity = filteredLocations.get(position).Capacity;
+
+        double percentageFilled = 0;
+        if (capacity != 0) {
+            percentageFilled = (double) currentCount / capacity;
+        }
+
         holder.cardTitle.setText(filteredLocations.get(position).LocationName);
-        String headString = "Headcount: " + filteredLocations.get(position).Count + " / Max: " + filteredLocations.get(position).Capacity;
+        String headString = "Headcount: " + currentCount + " / Max: " + capacity;
         holder.headCount.setText(headString);
+
+        holder.headCountDisplay.setMax(capacity);
+        holder.headCountDisplay.setProgress(currentCount);
+
+        int capacityColorId = R.color.headCountLow;
+        if (percentageFilled >= 0.75) {
+            capacityColorId = R.color.headCountHigh;
+        } else if (percentageFilled >= 0.50) {
+            capacityColorId = R.color.headCountMedium;
+        }
+        holder.headCountDisplay.getProgressDrawable().setColorFilter(
+            ContextCompat.getColor(context, capacityColorId),
+            PorterDuff.Mode.MULTIPLY
+        );
 
         boolean favorited = false;
 
@@ -196,6 +221,9 @@ public class CoRecAdapter extends RecyclerView.Adapter<CoRecAdapter.AreaViewHold
 
         @BindView(R.id.headcount)
         TextView headCount;
+
+        @BindView(R.id.headcount_display)
+        ProgressBar headCountDisplay;
 
         @BindView(R.id.card_main_title)
         TextView cardTitle;
