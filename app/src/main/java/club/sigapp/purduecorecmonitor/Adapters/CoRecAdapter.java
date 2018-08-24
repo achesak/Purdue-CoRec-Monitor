@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -112,15 +113,16 @@ public class CoRecAdapter extends RecyclerView.Adapter<CoRecAdapter.AreaViewHold
 
     @Override
     public void onBindViewHolder(AreaViewHolder holder, int position) {
-        int currentCount = filteredLocations.get(position).Count;
-        int capacity = filteredLocations.get(position).Capacity;
+        LocationsModel location = filteredLocations.get(position);
+        int currentCount = location.Count;
+        int capacity = location.Capacity;
 
         double percentageFilled = 0;
         if (capacity != 0) {
             percentageFilled = (double) currentCount / capacity;
         }
 
-        holder.cardTitle.setText(filteredLocations.get(position).LocationName);
+        holder.cardTitle.setText(location.LocationName);
         String headString = "Headcount: " + currentCount + " / Max: " + capacity;
         holder.headCount.setText(headString);
 
@@ -138,26 +140,15 @@ public class CoRecAdapter extends RecyclerView.Adapter<CoRecAdapter.AreaViewHold
             PorterDuff.Mode.MULTIPLY
         );
 
-        boolean favorited = false;
-
-        if (favorites != null) {
-            for (String favorite : favorites) {
-                if (filteredLocations.get(position).LocationId.equals(favorite)) {
-                    holder.favButton.setImageResource(R.drawable.ic_favorited_star);
-                    favorited = true;
-                }
-            }
-        }
-
-        if (!favorited) {
+        if (favorites != null && Arrays.asList(favorites).contains(location.LocationId)) {
+            holder.favButton.setImageResource(R.drawable.ic_favorited_star);
+        } else {
             holder.favButton.setImageResource(R.drawable.ic_unfavorited_star);
         }
 
-
-
         if(showImage) {
             //add image to card
-            switch (filteredLocations.get(position).Location.Zone.ZoneName) {
+            switch (location.Location.Zone.ZoneName) {
                 case "CoRec Basement":
                     Picasso.with(context).load(R.drawable.ic_floor_basement).fit().into(holder.icon);
                     break;
