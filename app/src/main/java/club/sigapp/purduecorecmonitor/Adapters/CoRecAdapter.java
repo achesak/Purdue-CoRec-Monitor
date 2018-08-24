@@ -20,6 +20,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -72,27 +73,27 @@ public class CoRecAdapter extends RecyclerView.Adapter<CoRecAdapter.AreaViewHold
         if (Favorites.getFavorites(context) != null) {
             this.favorites = Favorites.getFavorites(context).toArray(new String[0]);
         }
-        Collections.sort(filteredLocations);
 
-        int count = 0;
-        //iterate through all locations that have been favorited
         if (favorites != null) {
-            for (String s : favorites) {
-                //iterate through all locations to search for favorited location
-                for (int i = count; i < filteredLocations.size(); i++) {
-                    if (s.equals(filteredLocations.get(i).LocationId)) {
-                    /*move this location to index count and shift all others between count index
-                    and i down one to make room at top
-                     */
-                        LocationsModel temp = filteredLocations.get(i);
-                        for (int index = i; index > count; index--) {
-                            //shift location to the right
-                            filteredLocations.set(index, filteredLocations.get(index - 1));
-                        }
-                        filteredLocations.set(count++, temp);
+            final List<String> favoriteList = Arrays.asList(favorites);
+            Collections.sort(filteredLocations, new Comparator<LocationsModel>() {
+                @Override
+                public int compare(LocationsModel location1, LocationsModel location2) {
+                    boolean location1IsFavorite = favoriteList.contains(location1.LocationId);
+                    boolean location2IsFavorite = favoriteList.contains(location2.LocationId);
+                    if (location1IsFavorite && location2IsFavorite) {
+                        return location1.compareTo(location2);
+                    } else if (location1IsFavorite) {
+                        return -1;
+                    } else if (location2IsFavorite) {
+                        return 1;
+                    } else {
+                        return location1.compareTo(location2);
                     }
                 }
-            }
+            });
+        } else {
+            Collections.sort(filteredLocations);
         }
 
         notifyDataSetChanged();
