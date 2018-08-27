@@ -81,15 +81,13 @@ public class CoRecAdapter extends RecyclerView.Adapter<CoRecAdapter.AreaViewHold
                 public int compare(LocationsModel location1, LocationsModel location2) {
                     boolean location1IsFavorite = favoriteList.contains(location1.LocationId);
                     boolean location2IsFavorite = favoriteList.contains(location2.LocationId);
-                    if (location1IsFavorite && location2IsFavorite) {
-                        return location1.compareTo(location2);
-                    } else if (location1IsFavorite) {
-                        return -1;
-                    } else if (location2IsFavorite) {
-                        return 1;
-                    } else {
+
+                    // If both are favorites or neither are, sort normally
+                    if (location1IsFavorite == location2IsFavorite) {
                         return location1.compareTo(location2);
                     }
+                    // Otherwise, make sure the favorite one is first
+                    return location1IsFavorite ? -1 : 1;
                 }
             });
         } else {
